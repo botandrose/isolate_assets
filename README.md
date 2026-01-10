@@ -109,7 +109,7 @@ Example output:
 ## Requirements
 
 - Ruby 3.2+
-- Rails 8.0+
+- Rails 7.2+
 
 ## License
 
