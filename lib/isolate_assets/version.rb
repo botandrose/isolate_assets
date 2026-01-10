@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-class EngineAssets
+module IsolateAssets
   VERSION = "0.1.0"
 end
-

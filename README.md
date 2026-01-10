@@ -1,4 +1,4 @@
-# EngineAssets
+# IsolateAssets
 
 Self-contained asset serving for Rails engines. Serve JavaScript, CSS, and other assets from your engine without depending on Sprockets, Propshaft, or the host application's asset pipeline.
 
@@ -11,36 +11,31 @@ Rails engines that include UI components need to serve assets, but integrating w
 - **Configuration burden** - Users must manually configure asset paths
 - **Version compatibility** - Asset pipeline APIs change between Rails versions
 
-EngineAssets solves this by letting your engine serve its own assets through a simple controller, with fingerprinting and caching handled automatically.
+IsolateAssets solves this by letting your engine serve its own assets through a simple controller, with fingerprinting and caching handled automatically.
 
 ## Installation
 
 Add to your engine's gemspec:
 
 ```ruby
-spec.add_dependency "engine_assets"
+spec.add_dependency "isolate_assets"
 ```
 
 ## Usage
 
 ### 1. Set up your engine
 
-In your engine file:
+In your engine file, add `isolate_assets` alongside `isolate_namespace`:
 
 ```ruby
 # lib/my_engine/engine.rb
-require "engine_assets"
+require "isolate_assets"
 
 module MyEngine
   class Engine < ::Rails::Engine
     isolate_namespace MyEngine
-
-    initializer "my_engine.assets", before: :set_routes_reloader do
-      MyEngine.engine_assets = EngineAssets.new(engine: self)
-    end
+    isolate_assets
   end
-
-  mattr_accessor :engine_assets
 end
 ```
 
@@ -69,7 +64,7 @@ In your engine's application helper:
 # app/helpers/my_engine/application_helper.rb
 module MyEngine
   module ApplicationHelper
-    include MyEngine.engine_assets.helper
+    include MyEngine.isolated_assets_helper
   end
 end
 ```
@@ -87,8 +82,8 @@ end
 <%= engine_javascript_importmap_tags "application", {
   "jquery" => "https://cdn.jsdelivr.net/npm/jquery@3.7.1/+esm",
 } %>
-
 ```
+
 Example output:
 
 ```html

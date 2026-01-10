@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "lib/engine_assets/version"
+require_relative "lib/isolate_assets/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "engine_assets"
-  spec.version = EngineAssets::VERSION
+  spec.name = "isolate_assets"
+  spec.version = IsolateAssets::VERSION
   spec.authors = ["Micah Geisel"]
   spec.email = ["micah@botandrose.com"]
 
   spec.summary = "Self-contained asset serving for Rails engines"
   spec.description = "Serve JavaScript, CSS, and other assets from your Rails engine without depending on Sprockets, Propshaft, or the host application's asset pipeline."
-  spec.homepage = "https://github.com/botandrose/engine_assets"
+  spec.homepage = "https://github.com/botandrose/isolate_assets"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
 

@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gemspec
+gemspec name: "isolate_assets"
 
 gem "rake", "~> 13.0"
 gem "appraisal"

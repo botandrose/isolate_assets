@@ -2,6 +2,6 @@
 
 module Dummy
   module ApplicationHelper
-    include Dummy.engine_assets.helper
+    include Dummy.isolated_assets_helper
   end
 end

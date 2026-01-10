@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-class EngineAssets
+module IsolateAssets
   class Controller < ActionController::API
     include ActionController::MimeResponds
+
+    class_attribute :isolated_assets
 
     def show
       file_path = safe_file_path
@@ -21,20 +23,15 @@ class EngineAssets
 
     private
 
-    cattr_accessor :engine_assets
-
     def safe_file_path
       requested = params[:file].gsub("..", "")
       format = params[:format] || request.format.symbol.to_s
-      engine_assets.asset_path(requested, format)
+      isolated_assets.asset_path(requested, format)
     end
 
     def content_type
       format = params[:format] || request.format.symbol.to_s
-      engine_assets.content_type(format)
-    end
-
-    def verify_same_origin_request
+      isolated_assets.content_type(format)
     end
   end
 end

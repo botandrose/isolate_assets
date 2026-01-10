@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
-class EngineAssets
+module IsolateAssets
   module Helper
-    mattr_accessor :engine_assets
+    # Note: isolated_assets method is defined by the including module,
+    # created dynamically in EngineExtension#isolate_assets
 
     def engine_asset_url(source, type)
-      fingerprint_value = engine_assets.fingerprint(source, type)
+      fingerprint_value = isolated_assets.fingerprint(source, type)
       normalized_type = case type.to_s
       when "javascript" then "js"
       when "stylesheet" then "css"
       else type.to_s
       end
-      engine_asset_path("#{source}.#{normalized_type}", v: fingerprint_value)
+      isolated_asset_path("#{source}.#{normalized_type}", v: fingerprint_value)
     end
 
     def engine_stylesheet_link_tag(source, **options)
@@ -30,10 +31,10 @@ class EngineAssets
     end
 
     def engine_javascript_importmap_tags(entry_point = "application", imports = {})
-      assets_root = engine_assets.engine.root.join("app/#{engine_assets.assets_subdir}/javascripts")
-      engine_imports = engine_assets.javascript_files.each_with_object({}) do |path, hash|
+      assets_root = isolated_assets.engine.root.join("app/#{isolated_assets.assets_subdir}/javascripts")
+      engine_imports = isolated_assets.javascript_files.each_with_object({}) do |path, hash|
         relative_path = path.relative_path_from(assets_root).to_s
-        key = "#{engine_assets.engine.engine_name}/#{relative_path.sub(/\.js\z/, "")}"
+        key = "#{isolated_assets.engine.engine_name}/#{relative_path.sub(/\.js\z/, "")}"
         hash[key] = engine_asset_url(relative_path.sub(/\.js\z/, ""), "js")
       end
       [
@@ -41,7 +42,7 @@ class EngineAssets
           JSON.pretty_generate({"imports" => imports.merge(engine_imports)}).html_safe
         end,
         tag.script(<<~JS.html_safe, type: "module")
-          import "#{engine_assets.engine.engine_name}/#{entry_point}"
+          import "#{isolated_assets.engine.engine_name}/#{entry_point}"
         JS
       ].join("\n").html_safe
     end
