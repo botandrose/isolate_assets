@@ -15,6 +15,11 @@ Feature: Asset Serving
     And the content type should be "text/css"
     And the response should contain "font-family: sans-serif"
 
+  Scenario: Serving an image file
+    When I request "/dummy/assets/logo.png"
+    Then I should receive a successful response
+    And the content type should be "image/png"
+
   Scenario: Asset fingerprinting
     When I request "/dummy/assets/application.js"
     Then the response should have caching headers

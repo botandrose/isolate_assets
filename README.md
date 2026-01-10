@@ -54,13 +54,44 @@ my_engine/
       stylesheets/
         application.css
         theme.css
+      images/
+        logo.png
+        icons/
+          menu.svg
+      fonts/
+        custom.woff2
 ```
 
 IsolateAssets automatically excludes your engine's `app/assets/` directory from the host app's asset pipeline (Sprockets/Propshaft), so your assets won't conflict with or be processed by the host application.
 
-### 3. Include the helper
+### 3. Use in your views
 
-In your engine's application helper:
+Call helper methods directly on your engine's namespace:
+
+```erb
+<%# Stylesheets %>
+<%= MyEngine.stylesheet_link_tag "application" %>
+
+<%# JavaScript %>
+<%= MyEngine.javascript_include_tag "application" %>
+
+<%# Images %>
+<%= MyEngine.image_tag "logo.png", alt: "Logo" %>
+<%= MyEngine.image_path "icon.svg" %>
+
+<%# Other assets %>
+<%= MyEngine.font_path "custom.woff2" %>
+<%= MyEngine.asset_path "data.json" %>
+
+<%# ES6 import maps with CDN dependencies %>
+<%= MyEngine.javascript_importmap_tags "application", {
+  "jquery" => "https://cdn.jsdelivr.net/npm/jquery@3.7.1/+esm",
+} %>
+```
+
+### Alternative: Include helper for unprefixed access
+
+If you prefer `stylesheet_link_tag` over `MyEngine.stylesheet_link_tag`, include the helper in your engine's ApplicationHelper:
 
 ```ruby
 # app/helpers/my_engine/application_helper.rb
@@ -71,22 +102,32 @@ module MyEngine
 end
 ```
 
-### 4. Use in your views
+Then in views:
 
 ```erb
-<%# Basic stylesheet %>
-<%= engine_stylesheet_link_tag "application" %>
-
-<%# Basic script tag %>
-<%= engine_javascript_include_tag "application" %>
-
-<%# ES6 import maps with CDN dependencies %>
-<%= engine_javascript_importmap_tags "application", {
-  "jquery" => "https://cdn.jsdelivr.net/npm/jquery@3.7.1/+esm",
-} %>
+<%= stylesheet_link_tag "application" %>
+<%= image_tag "logo.png", alt: "Logo" %>
 ```
 
-Example output:
+Note: This shadows Rails' built-in asset helpers within your engine's views.
+
+### Available helpers
+
+| Helper | Description |
+|--------|-------------|
+| `stylesheet_link_tag(source, **options)` | `<link>` tag for CSS |
+| `javascript_include_tag(source, **options)` | `<script>` tag for JS |
+| `javascript_importmap_tags(entry_point, imports)` | ES6 import map |
+| `image_tag(source, **options)` | `<img>` tag |
+| `image_path(source)` | URL path for images |
+| `asset_path(source)` | URL path for any asset (infers type from extension) |
+| `font_path(source)` | URL path for fonts |
+| `audio_tag(source, **options)` | `<audio>` tag |
+| `audio_path(source)` | URL path for audio |
+| `video_tag(source, **options)` | `<video>` tag |
+| `video_path(source)` | URL path for video |
+
+### Example output
 
 ```html
 <script type="importmap">

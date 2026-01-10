@@ -2,6 +2,11 @@
 
 module IsolateAssets
   module EngineExtension
+    HELPER_METHODS = %i[
+      stylesheet_link_tag javascript_include_tag javascript_importmap_tags
+      asset_path image_path image_tag font_path audio_path audio_tag video_path video_tag
+    ].freeze
+
     def isolate_assets(assets_subdir: "assets")
       engine_class = self
 
@@ -33,14 +38,30 @@ module IsolateAssets
         controller_class = Class.new(IsolateAssets::Controller)
         controller_class.isolated_assets = assets
 
-        # Hack in the helpers. There's gotta be a better way than this...
+        # Create helper module for inclusion in engine's ApplicationHelper
         helper_module = Module.new do
           define_method(:isolated_assets) { assets }
           include IsolateAssets::Helper
         end
+
         if engine_class.respond_to?(:railtie_namespace) && engine_class.railtie_namespace
-          engine_class.railtie_namespace.singleton_class.define_method(:isolated_assets) { assets }
-          engine_class.railtie_namespace.singleton_class.define_method(:isolated_assets_helper) { helper_module }
+          namespace = engine_class.railtie_namespace
+
+          # Expose isolated_assets and helper module
+          namespace.singleton_class.define_method(:isolated_assets) { assets }
+          namespace.singleton_class.define_method(:isolated_assets_helper) { helper_module }
+
+          # Define helper methods directly on namespace (e.g., Dummy.stylesheet_link_tag)
+          helper_context = Class.new do
+            include IsolateAssets::Helper
+            define_method(:isolated_assets) { assets }
+          end.new
+
+          HELPER_METHODS.each do |method_name|
+            namespace.singleton_class.define_method(method_name) do |*args, **kwargs, &block|
+              helper_context.send(method_name, *args, **kwargs, &block)
+            end
+          end
         end
 
         engine_class.routes.prepend do

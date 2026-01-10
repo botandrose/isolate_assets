@@ -12,3 +12,8 @@ Feature: View Helpers
     When I visit the dummy engine root
     Then the page should have an import map
     And the import map should include "dummy/application"
+
+  Scenario: Image tag includes fingerprint
+    When I visit the dummy engine root
+    Then the page should have an image tag with src starting with "/dummy/assets/logo.png"
+    And the image tag should include a fingerprint parameter

@@ -4,6 +4,56 @@ module IsolateAssets
   class Assets
     attr_reader :engine, :assets_subdir
 
+    ASSET_DIRECTORIES = {
+      "js" => "javascripts",
+      "javascript" => "javascripts",
+      "css" => "stylesheets",
+      "stylesheet" => "stylesheets",
+      "png" => "images",
+      "jpg" => "images",
+      "jpeg" => "images",
+      "gif" => "images",
+      "svg" => "images",
+      "webp" => "images",
+      "ico" => "images",
+      "woff" => "fonts",
+      "woff2" => "fonts",
+      "ttf" => "fonts",
+      "otf" => "fonts",
+      "eot" => "fonts",
+      "mp3" => "audio",
+      "ogg" => "audio",
+      "wav" => "audio",
+      "mp4" => "video",
+      "webm" => "video",
+      "ogv" => "video"
+    }.freeze
+
+    CONTENT_TYPES = {
+      "js" => "application/javascript",
+      "javascript" => "application/javascript",
+      "css" => "text/css",
+      "stylesheet" => "text/css",
+      "png" => "image/png",
+      "jpg" => "image/jpeg",
+      "jpeg" => "image/jpeg",
+      "gif" => "image/gif",
+      "svg" => "image/svg+xml",
+      "webp" => "image/webp",
+      "ico" => "image/x-icon",
+      "woff" => "font/woff",
+      "woff2" => "font/woff2",
+      "ttf" => "font/ttf",
+      "otf" => "font/otf",
+      "eot" => "application/vnd.ms-fontobject",
+      "mp3" => "audio/mpeg",
+      "ogg" => "audio/ogg",
+      "wav" => "audio/wav",
+      "mp4" => "video/mp4",
+      "webm" => "video/webm",
+      "ogv" => "video/ogg"
+    }.freeze
+
     def initialize(engine:, assets_subdir: "assets")
       @engine = engine
       @assets_subdir = assets_subdir
@@ -11,12 +61,11 @@ module IsolateAssets
     end
 
     def asset_path(source, type)
-      case type.to_s
-      when "js", "javascript"
-        engine.root.join("app/#{assets_subdir}/javascripts", "#{source}.js")
-      when "css", "stylesheet"
-        engine.root.join("app/#{assets_subdir}/stylesheets", "#{source}.css")
-      end
+      directory = ASSET_DIRECTORIES[type.to_s]
+      return nil unless directory
+
+      normalized = normalize_type(type)
+      engine.root.join("app/#{assets_subdir}/#{directory}", "#{source}.#{normalized}")
     end
 
     def asset_url(source, type)
@@ -35,14 +84,7 @@ module IsolateAssets
     end
 
     def content_type(type)
-      case type.to_s
-      when "js", "javascript"
-        "application/javascript"
-      when "css", "stylesheet"
-        "text/css"
-      else
-        "application/octet-stream"
-      end
+      CONTENT_TYPES[type.to_s] || "application/octet-stream"
     end
 
     def javascript_files

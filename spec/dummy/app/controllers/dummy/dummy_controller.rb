@@ -7,11 +7,12 @@ module Dummy
         <!DOCTYPE html>
         <html>
         <head>
-          <%= engine_stylesheet_link_tag "application" %>
-          <%= engine_javascript_importmap_tags "application" %>
+          <%= Dummy.stylesheet_link_tag "application" %>
+          <%= Dummy.javascript_importmap_tags "application" %>
         </head>
         <body>
           <h1>Dummy Engine</h1>
+          <%= Dummy.image_tag "logo.png", alt: "Logo" %>
         </body>
         </html>
       ERB
