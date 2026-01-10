@@ -41,12 +41,12 @@ end
 
 ### 2. Add your assets
 
-Place assets in `app/engine_assets/`:
+Place assets in the standard `app/assets/` directory:
 
 ```
 my_engine/
   app/
-    engine_assets/
+    assets/
       javascripts/
         application.js
         components/
@@ -55,6 +55,8 @@ my_engine/
         application.css
         theme.css
 ```
+
+IsolateAssets automatically excludes your engine's `app/assets/` directory from the host app's asset pipeline (Sprockets/Propshaft), so your assets won't conflict with or be processed by the host application.
 
 ### 3. Include the helper
 
@@ -99,6 +101,16 @@ Example output:
 <script type="module">
   import "my_engine/application"
 </script>
+```
+
+## How it works
+
+IsolateAssets automatically excludes your engine's asset directories from `config.assets.paths`, so Sprockets, Propshaft, and dartsass-rails won't process them. Your assets are served exclusively through the isolate_assets controller with their own fingerprinting and caching.
+
+This exclusion relies on filtering `config.assets.paths` after engines register their directories. While this works with current Rails asset tools, future versions could change path discovery. For guaranteed isolation, use a non-standard directory:
+
+```ruby
+isolate_assets assets_subdir: "isolated_assets"  # uses app/isolated_assets/
 ```
 
 ## Requirements

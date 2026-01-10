@@ -11,4 +11,6 @@ group :test do
   gem "rspec", "~> 3.0"
   gem "cucumber", "~> 9.0"
   gem "capybara", "~> 3.0"
+  gem "sprockets-rails"
+  gem "propshaft"
 end

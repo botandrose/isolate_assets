@@ -8,7 +8,7 @@
 /tmp/
 /.ruby-version
 /.ruby-gemset
-/log
+log/
 /Gemfile.lock
 /gemfiles/*.lock
 

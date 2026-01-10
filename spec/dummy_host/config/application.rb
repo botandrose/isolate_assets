@@ -2,6 +2,7 @@
 
 require "rails"
 require "action_controller/railtie"
+require "sprockets/railtie"
 
 # Add dummy engine's lib to load path
 $LOAD_PATH.unshift File.expand_path("../../dummy/lib", __dir__)
@@ -12,6 +13,12 @@ module DummyHost
     config.eager_load = false
     config.hosts.clear
     config.secret_key_base = "test_secret_key_base_for_testing_only"
+
+    # Set the root path so Sprockets can find assets
+    config.root = File.expand_path("..", __dir__)
+
+    # Enable asset pipeline for testing exclusion
+    config.assets.enabled = true
 
     # Load routes from our routes file
     config.paths["config/routes.rb"] = File.expand_path("routes.rb", __dir__)

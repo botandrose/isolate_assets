@@ -4,7 +4,7 @@ module IsolateAssets
   class Assets
     attr_reader :engine, :assets_subdir
 
-    def initialize(engine:, assets_subdir: "engine_assets")
+    def initialize(engine:, assets_subdir: "assets")
       @engine = engine
       @assets_subdir = assets_subdir
       @fingerprints = {}

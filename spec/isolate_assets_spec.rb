@@ -27,22 +27,22 @@ RSpec.describe IsolateAssets do
     describe "#asset_path" do
       it "returns path for JavaScript files" do
         path = isolated_assets.asset_path("application", "js")
-        expect(path.to_s).to end_with("app/engine_assets/javascripts/application.js")
+        expect(path.to_s).to end_with("app/assets/javascripts/application.js")
       end
 
       it "returns path for CSS files" do
         path = isolated_assets.asset_path("application", "css")
-        expect(path.to_s).to end_with("app/engine_assets/stylesheets/application.css")
+        expect(path.to_s).to end_with("app/assets/stylesheets/application.css")
       end
 
       it "handles 'javascript' type alias" do
         path = isolated_assets.asset_path("application", "javascript")
-        expect(path.to_s).to end_with("app/engine_assets/javascripts/application.js")
+        expect(path.to_s).to end_with("app/assets/javascripts/application.js")
       end
 
       it "handles 'stylesheet' type alias" do
         path = isolated_assets.asset_path("application", "stylesheet")
-        expect(path.to_s).to end_with("app/engine_assets/stylesheets/application.css")
+        expect(path.to_s).to end_with("app/assets/stylesheets/application.css")
       end
     end
 
