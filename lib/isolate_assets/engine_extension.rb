@@ -10,8 +10,10 @@ module IsolateAssets
     def isolate_assets(assets_subdir: "assets")
       engine_class = self
 
-      # Exclude engine assets from host's asset pipeline
+      # Exclude engine assets from host's asset pipeline (if one exists)
       initializer "#{engine_name}.isolate_assets.exclude_from_pipeline", before: :load_config_initializers do |app|
+        next unless app.config.respond_to?(:assets) && app.config.assets
+
         asset_base = engine_class.root.join("app", assets_subdir)
         app.config.assets.excluded_paths ||= []
         if asset_base.exist?
@@ -23,11 +25,12 @@ module IsolateAssets
 
       # Sprockets doesn't respect excluded_paths, so filter manually
       initializer "#{engine_name}.isolate_assets.filter_asset_paths", after: :load_config_initializers do |app|
-        if app.config.assets.excluded_paths.present?
-          excluded = app.config.assets.excluded_paths.map(&:to_s)
-          app.config.assets.paths = app.config.assets.paths.reject do |path|
-            excluded.include?(path.to_s)
-          end
+        next unless app.config.respond_to?(:assets) && app.config.assets
+        next unless app.config.assets.excluded_paths.present?
+
+        excluded = app.config.assets.excluded_paths.map(&:to_s)
+        app.config.assets.paths = app.config.assets.paths.reject do |path|
+          excluded.include?(path.to_s)
         end
       end
 
