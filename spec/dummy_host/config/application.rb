@@ -8,6 +8,10 @@ require "sprockets/railtie"
 $LOAD_PATH.unshift File.expand_path("../../dummy/lib", __dir__)
 require "dummy"
 
+# Non-isolated engine that draws its asset route into the application router
+$LOAD_PATH.unshift File.expand_path("../../dummy_widget/lib", __dir__)
+require "widget"
+
 module DummyHost
   class Application < Rails::Application
     config.eager_load = false

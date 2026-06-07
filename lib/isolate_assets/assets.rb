@@ -2,7 +2,8 @@
 
 module IsolateAssets
   class Assets
-    attr_reader :engine, :assets_subdir
+    attr_reader :engine, :assets_subdir, :route_name
+    attr_accessor :controller
 
     ASSET_DIRECTORIES = {
       "js" => "javascripts",
@@ -54,10 +55,18 @@ module IsolateAssets
       "ogv" => "video/ogg"
     }.freeze
 
-    def initialize(engine:, assets_subdir: "assets")
+    def initialize(engine:, assets_subdir: "assets", route_name: :isolated_asset, url_helpers: nil)
       @engine = engine
       @assets_subdir = assets_subdir
+      @route_name = route_name
+      @url_helpers = url_helpers || -> { engine.routes.url_helpers }
       @fingerprints = {}
+    end
+
+    # Draws the catch-all asset route into the given router (the application
+    # router for non-isolated engines, the engine's own for isolated ones).
+    def draw(mapper, path)
+      mapper.get "#{path}/*file", to: controller.action(:show), as: route_name
     end
 
     def asset_path(source, type)
@@ -70,7 +79,11 @@ module IsolateAssets
 
     def asset_url(source, type)
       fingerprint_value = fingerprint(source, type)
-      engine.routes.url_helpers.isolated_asset_path("#{source}.#{normalize_type(type)}", v: fingerprint_value)
+      @url_helpers.call.public_send(
+        "#{route_name}_path",
+        "#{source}.#{normalize_type(type)}",
+        v: fingerprint_value,
+      )
     end
 
     def fingerprint(source, type)

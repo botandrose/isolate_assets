@@ -154,6 +154,27 @@ This exclusion relies on filtering `config.assets.paths` after engines register 
 isolate_assets assets_subdir: "isolated_assets"  # uses app/isolated_assets/
 ```
 
+## Non-isolated engines
+
+`isolate_assets` assumes `isolate_namespace` and a mounted route set. For an engine that isn't isolated — one that draws its routes directly into the application router — use `IsolateAssets.register` instead, then draw the asset route yourself with whatever path and name you want:
+
+```ruby
+# lib/my_engine.rb
+module MyEngine
+  class Engine < ::Rails::Engine; end
+  Assets = IsolateAssets.register(namespace: self, engine: Engine, route_name: :my_engine_asset)
+end
+```
+
+```ruby
+# config/routes.rb (drawn into the application router)
+Rails.application.routes.draw do
+  MyEngine::Assets.draw(self, "/my_engine/assets")
+end
+```
+
+This gives you the same namespaced helpers as the isolated path — `MyEngine.stylesheet_link_tag "app"`, `MyEngine.javascript_include_tag "app"`, etc. — fingerprinted against your chosen route.
+
 ## Requirements
 
 - Ruby 3.2+
